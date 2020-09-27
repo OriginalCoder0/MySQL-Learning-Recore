@@ -1,0 +1,44 @@
+create database sell;
+use sell;
+
+create table customer(
+Cid int comment '顾客号' primary key auto_increment,
+Cname varchar(5) comment '顾客名' not null,
+Cphone char(11) comment '电话' not null,
+VIP set('食','日','家') comment '会员'
+);
+
+create table products(
+Pid char(5) comment '产品号' primary key,
+Pname varchar(10) comment '产品名' not null,
+Pprice float(6,2) comment '单价' not null
+);
+
+
+create table sales(
+Oid char(12) comment '订单编号' primary key,
+sid int comment '顾客号' not null auto_increment,
+Snumber int comment '订货数量',
+Sotime TIMESTAMP comment '订货日期',
+Sdtime DATE comment '交货日期'
+);
+
+drop table sales;
+
+create table detailed(
+Oid char(12) comment '订单编号',
+Pid char(5) comment '产品号',
+Dnumber int comment '订货数量',
+Dmoney decimal(7,2) comment '金额',
+-- primary key(Oid,Pid,Dnumber),#定义联合主键
+foreign key (Oid) REFERENCES sales(Oid) on update CASCADE,  #建立订单编号的外键并级联修改
+foreign key (Pid) REFERENCES products(Pid) on update CASCADE, #建立产品号的外键并级联修改
+foreign key (Dnumber) REFERENCES sales(Snumber) on update CASCADE
+);
+drop table detailed;
+
+#删除sales表中外键
+alter table sales drop FOREIGN key detailed_ibfk_3 #外键名
+
+
+select now();
