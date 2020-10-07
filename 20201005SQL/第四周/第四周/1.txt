@@ -1,0 +1,76 @@
+insert into student values('S01','张三','男',null,null,null,null)
+select *from student;
+
+
+insert into student(studentid,sex,studentname)
+values('S02','男','zs');
+
+#一次性多条导入
+insert into student(studentid,sex,studentname)
+values('S03','男','zs'),('S04','男','zs'),('S05','男','zs');
+
+#复制student表结构，并将现有的student表数据放进去
+create table student_copy like student;
+
+select *from student_copy;
+
+#数据更新
+#将student表中的zs修改成张三,性别修改为女
+update student										#修改student表
+set studentname='李四',sex='女'		#学生姓名修改为张三
+where studentname= '张三';     		#挑选出张三所在的行
+
+select *from student;
+delete from student;
+
+
+
+#删除
+#删除St0109010001同学的信息
+delete from student
+where studentid='St0109010001';
+
+#删除St0109010004同学的地址
+update student										#修改student表
+set HomeAddr=null
+where studentid= 'St0109010004'; 
+
+
+
+#查询
+#查询student表的学号和姓名列
+select studentid,studentname from student;
+
+#查询course表中所有课程的课程名和对应学分
+select CourseName,credit from course;
+
+#查询每个同学的学号，姓名，年龄（以2010年为计算标准）
+select studentid,studentname,2010-year(birth1) as '年龄' from student;
+
+#查询每个同学的学号，课程号，成绩及其是否及格(60以下，差，60-80，良，80以上，优秀)
+select studentid,courseid,grade,
+case when grade<60 then '差'
+when grade>=60 and grade<=80 then '良好'
+else '优秀'  end '成绩等级'
+from grade;  
+
+#查询班级表中每个班级的编号以及该班级对应的系（如果是Dp01,输出计算机系，如果是Dp02，输出英语系)
+select classid,departmentid,
+case when departmentid='Dp01' then '计算机系'
+else '英语系' end '系别'
+from class;
+
+#去重
+select distinct studentid from grade;			#学生ID去重
+select distinct courseid from grade;			#6门课程
+
+#输出所有同学所有课程的平均成绩
+select distinct grade from grade;
+select sum(grade) as '总成绩' from grade;
+select AVG(grade) as '平均成绩' from grade;
+
+
+#查找student表中一共有多少位同学以及年龄最大的学生姓名select count(studentid) as '学生人数' from student;
+select min(birth1) as '年龄最大' from student;
+select birth1
+case when min(birth1)

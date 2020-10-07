@@ -1,0 +1,157 @@
+create database Test;
+# 向已有数据中插入数值
+update student set HomeAddr = "武汉市武汉传媒学院" where StudentID = "St0111040001";
+select HomeAddr from student where StudentID = "St0111040001";
+
+#查看有多少个同学选过课
+select count(distinct studentid) as student_num from grade;
+
+#统计学生人数
+select count(*) from student; #*时，null也参与计算行总数
+select count(birth1) from student;  #具体列时，该列null值不参与计算行总数
+
+#查看所有同学所有课程的平均成绩
+select avg(grade) as avg_all_course from grade;
+
+#查看某一门课程的平均成绩
+select avg(grade) as avg_course from grade;
+
+SELECT courseID, COUNT(*) FROM   grade GROUP BY courseID;
+
+# 输出dp0000001的平均成绩
+select avg(grade) as avg_all_course from grade where courseid = 'Dp010001';
+
+
+#输出每门课程的平均成绩
+select courseid,avg(grade)
+from grade
+group by courseid;
+
+# 输出平均成绩大于80的课程
+select courseid,avg(grade)
+from grade
+group by courseid
+having avg(grade)>80;
+
+# 输出平均成绩大于80的课程(每门课60分以下的同学不参与平均成绩的计算)
+select courseid,avg(grade)
+from grade
+where grade >= 60
+group by courseid
+having avg(grade)>80
+order by avg(grade) desc;
+
+
+
+
+#查询出成绩大于等于90的同学学号
+select grade,studentid from grade where grade>=90;
+
+#查询出成绩大于60小于90的同学学号
+select grade,studentid from grade where grade between 60 and 90;
+
+select distinct studentid from grade where grade>60 and grade<90;
+
+
+
+
+
+# ``````````````````````````````````````````````````````````````````````````````````````
+#方法一:
+select studentid 
+from student
+where studentid not in (select studentid
+from grade
+where courseid in ('Dp010001','Dp010002'))
+
+#方法二
+select studentid
+from student a
+where not exists(select studentid
+from grade
+where courseid in ('Dp010001','Dp010002') and studentid=a.studentid)
+
+
+
+#查询选修了Dp010001或者Dp010003课程的同学学号
+select a.studentid,a.courseid,b.courseid
+from grade a,grade b
+where a.studentid = b.studentid and a.courseid = 'Dp010001' and b.courseid = 'Dp010003';
+
+
+#查询没有选修Dp010001或者Dp010002课程的同学学号
+select distinct studentid
+from student
+where classid not in ('cs010901','cs010902');
+
+
+#查找Cs010901班和Cs010902班的女同学
+select studentid,sex,classID
+from student 
+where (classID = 'cs010901' or classID = 'cs010902' ) and sex = '女';
+-- and优先级大于or，可以用括号调整
+
+
+#查找没有班长的班级号
+select  classid,monitor
+from class
+where monitor is null;
+
+# 查找有班长的班级号和班级人数
+select  classid,studentnum,monitor
+from class
+where monitor is not null;
+
+#查找大连的同学学号和姓名
+select studentid,studentname,homeaddr
+from student
+where HomeAddr like '大连市%';
+
+#查找姓名第二个字为雨的同学
+select studentid,studentname
+from student
+where studentname like '_雨%';
+
+#查找书名中以“数据库技术与应用_”开头的书
+select courseid,bookname
+from course
+where bookname like '数据库技术与应用\_%';		#当遇到_划线的时候，添加一个本来拥有的实际意义，加一个"\"
+#用其他的字符来替代转义字符
+where bookname like '数据库技术与应用\_%' escape "/";
+
+
+#查询选修了Dp010001且成绩为前三名的同学的学号及对应的成绩。
+select courseid,studentid,grade
+from grade
+where courseid = 'Dp010001'
+order by grade desc limit 3;
+
+#查询选修了Dp010001且成绩为第三名的同学的学号及对应的成绩。
+select courseid,studentid,grade
+from grade
+where courseid = 'Dp010001'
+order by grade desc limit 1;
+
+
+#查询全体学生情况，查询结果按所在系的系号升序排列，同一系中的学生按年龄降序排列。
+select studentid,classid,year(birth1),2020-year(birth1)
+from student
+order by classid,2020-year(birth1) desc 
+
+# 查询总共有多少个班级？查询有班长的班级有多少个？通过student表查询每个班级各有多少个人？
+select count(classid),monitor
+from class;
+where monitor is not null;
+
+
+
+
+#查询每个班中各年份出生的人数是多少？
+select classid as '班级号',year(birth1) as '出生年月',count(*) as '人数'
+from student
+group by classid,year(birth1);
+
+
+
+
+
